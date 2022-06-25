@@ -27,23 +27,33 @@
             top: 10%;
             left: 15%;
             padding: 50px;
-            color: rgb(160, 160, 20);
+            color: rgb(171, 171, 28);
             width: 300px;
-            height: 400px;
+            height: 480px;
             text-align: center;
             font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-            font-size: 17px;
+            font-size: 15px;
             
         }
 
         .camposTexto input{
             width: 85%;
-            background-color:rgba(241, 247, 253, 0.928);
+            background-color:rgba(251, 253, 241, 0.928);
             text-align: center;
-            padding: 5px;  
+            padding: 4px;  
             height: 16px;
-            font-size: 14px;
+            font-size: 13px;
+            display: flexbox;
+            flex-direction: row;
         }
+
+        .camposTexto{
+            color: rgb(206, 209, 182);
+            margin: 2px;
+            padding: 0px;
+            
+        }
+
 
         .botoes input{
             width: 80px;
@@ -51,6 +61,7 @@
             background-color: gainsboro;
             color: black;
             font-weight: bold;
+            text-align: center;
         }
 
         .saidaRelatorio{
@@ -61,7 +72,7 @@
             padding: 50px;
             color: rgb(234, 234, 234);
             width: 600px;
-            height: 400px;
+            height: 480px;
             text-align: center;
             font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
             font-size: 17px;
@@ -83,12 +94,13 @@
         }
 
         .labels {
-            font-size: 20px;
-            color: rgb(220, 216, 216)
+            font-size: 17px;
+            color: rgb(220, 216, 216);
+            height: 20px;
+            width: 20px;
+            text-align: center;
         }
-
-
-
+ 
     </style>
 </head>
     <body>
@@ -96,15 +108,27 @@
             <form>
                 <div class="formulario">
                     <h3> Cálculo Custo Benefício Pizza</h3>
-                    <br><br>
+                    <br>
                     <div class="camposTexto">
-                        <label class="labels" for="idNome">Nome da pizza:</label><br><br>
+                        <label for="idNome">Nome da pizza:</label>
                         <input type="text" id="idNome" name="nmNome" placeholder="Insira um nome"><br><br>
                         
-                        <label class="labels" for="idTamanho">Tamanho da pizza:</label><br><br>
-                        <input type="number" id="idTamanho" name="nmTamanho" placeholder="Insira o tamanho em (cm)" min="0"><br><br>
+                        <input type="radio" id="idCircular" name="nmFormato" checked>
+                        <label for="idCircular">Redonda</label>
 
-                        <label class="labels" for="idPreco">Insira o preço da pizza:</label><br><br>
+                        <input type="radio" id="idQuadrada" name="nmFormato">
+                        <label for="idQuadrada">Quadrada</label>
+                            
+                        <input type="radio" id="idRetangular" name="nmFormato">
+                        <label for="idRetangular">Retangular</label><br><br>
+                            
+
+
+                        <label for="idTamanho">Tamanho da pizza:</label><br><br>
+                        <input type="number" id="idTamanho" name="nmTamanho" placeholder="Insira o tamanho em (cm)" min="0"><br><br>
+                        <input type="number" id="idTamanho2" name="nmTamanho2" placeholder="Insira o segundo lado (cm)" min="0"><br><br>
+
+                        <label for="idPreco">Insira o preço da pizza:</label><br><br>
                         <input type="number" id="idPreco" name="nmPreco" placeholder="Preço em reais" min="0">
                         <br><br>
 
@@ -147,9 +171,22 @@
             var btLimpar = document.getElementById('idBtLimpar')
             var btRelatorio = document.getElementById('idBtRelatorio')
 
+            // declarando radio buttons
+
+            var btCircular = document.getElementById("idCircular")
+            var btQuadrada = document.getElementById("idQuadrada")
+            var btRetangular = document.getElementById("idRetangular")
+
+            //
+
+            var red = document.getElementById('idCircular').checked
+            var quad = document.getElementById('idQuadrada').checked
+            var ret = document.getElementById('idRetangular').checked
+
             // declarando variaveis de input
             var nome = document.getElementById('idNome')
             var tamanho = document.getElementById('idTamanho')
+            var tamanho2 = document.getElementById("idTamanho2")
             var preco = document.getElementById('idPreco')
             var tab = document.getElementById('idTab1')
 
@@ -161,6 +198,7 @@
             var tamanhos = []
             var precos = []
             var precoPorCm = []
+            var tamanhos2 = []
 
             // declarando arrays que receberao as saidas ordenadas, outputs.
 
@@ -174,13 +212,27 @@
 
             // ----------- tratando eventos ----------
 
+            document.getElementById('idTamanho2').hidden = true
+
+            btCircular.onclick = function(){
+                configurarTela()
+            }
+
+            btQuadrada.onclick = function(){
+                configurarTela()
+            }
+
+            btRetangular.onclick = function(){
+                configurarTela()
+            }
+
             // salvar dados da tela
             btSalvar.onclick = function(){
 
                 let isTelaValida = consistirTela() // true or false
 
                 if (isTelaValida){
-                    salvar(nome,tamanho,preco)
+                    salvar(nome,tamanho,tamanho2,preco)
                     limparCampos()
                 }
             }
@@ -188,8 +240,15 @@
             // mostrar relatorio das pizzas
             btRelatorio.onclick = function(){
 
-                relacaoPreco(tamanhos, precos)
+                relacaoPreco(tamanhos, tamanhos2, precos, red, quad, ret)
                 melhorCustoBeneficio(precoPorCm,nomes,precos,tamanhos)
+
+                console.log('nomes', nomes)
+                console.log('precos', precos)
+                console.log('tamanho1', tamanhos)
+                console.log('tamanho2', tamanhos2)
+                console.log('precoPCm', precoPorCm)
+
                 diferencaPorcentagem()
                 tabela(nomesOrdenados, tamanhosOrdenados, precosOrdenados, precoPorCm, aumentoPorcentual)
                 esvaziarVetores()
@@ -201,6 +260,29 @@
                 limparTabela()
             }
 
+            /*
+                Configurar tela
+            */
+
+            function configurarTela(){
+
+                circular = document.getElementById("idCircular").checked
+                quadrada = document.getElementById("idQuadrada").checked
+                retangular = document.getElementById("idRetangular").checked
+
+                if (circular){
+                    document.getElementById('idTamanho2').disabled = true
+                    document.getElementById('idTamanho2').hidden = true
+                }
+                if (quadrada){
+                    document.getElementById("idTamanho2").disabled = true
+                    document.getElementById('idTamanho2').hidden = true
+                }
+                if (retangular){
+                    document.getElementById("idTamanho2").disabled = false
+                    document.getElementById('idTamanho2').hidden = false
+                }
+            }
 
             /*
                 Rotina de consistencia.
@@ -232,6 +314,15 @@
                     return false
                 }
 
+                if (document.getElementById("idRetangular").checked == true){
+                    if (tamanho2.value == "" || tamanho2.value == " "){
+                        outSalvar.value = "Campo tamanho, preenchimento obrigatório"
+                        outSalvar.classList.add("alerta")
+                        tamanho2.focus()
+                        return false
+                    }
+                }
+
                 outSalvar.classList.remove("alerta")
                 return true
             }
@@ -239,13 +330,21 @@
             /*
                 Essa funcao irá salvar as entradas na tela em cada vetor correspondente.
             */
-            function salvar(nome,tamanho,preco){
+            function salvar(nome,tamanho,tamanho2,preco){
 
                 nomes.push(nome.value)
                 tamanhos.push(tamanho.value)
                 precos.push(preco.value)
+                
+                if (tamanho2.value == "" || tamanho2.value == " "){
+                    tamanhos2.push(0)
+                }else{
+                    tamanhos2.push(tamanho2.value)
+                }
 
                 outSalvar.value = "Pizza [ " + nome.value + " ] salva com sucesso!"
+
+                document.getElementById('idCircular').checked = true
 
                 nome.focus()
             }
@@ -258,7 +357,7 @@
                 nome.value = ""
                 tamanho.value = ""
                 preco.value = ""
-
+                tamanho2.value = "" 
             }
 
             function limparTabela(){
@@ -266,6 +365,8 @@
                 while (tab.rows.length > 1){ 
                     tab.deleteRow(1); 
                 }
+
+                outSalvar.value = "..."
             }
 
             function esvaziarVetores(){
@@ -318,15 +419,17 @@
                 -> entrada: diametro
             */
 
-            function relacaoPreco(tamanhos, preco){
+            function relacaoPreco(tamanhos, tamanhos2, preco, redonda, quadrada, retangular){
                 
                 for (let i=0; i < tamanhos.length; i++){
                     
-                    var raio = Number(tamanhos[i] / 2)
+                    //var raio = Number(tamanhos[i] / 2)
+                    //var area = pi * ( raio ** 2 ) 
+                    var calcArea = calcularArea(tamanhos[i], tamanhos2[i], redonda, quadrada, retangular)
+                    console.log(calcArea)
 
-                    var area = pi * ( raio ** 2 ) 
-
-                    var precoCm = precos[i] / area
+                    var precoCm = precos[i] / calcArea
+                    console.log(precoCm)
 
                     precoPorCm.push((Number(precoCm)).toFixed(3))
 
@@ -388,6 +491,28 @@
                     aumentoPorcentual.push(aumento.toFixed(2))
 
                 }
+            }
+
+            function calcularArea(tamanho, tamanho2, redonda, quadrada, retangular){
+
+                var area = 0
+
+                if (document.getElementById('idCircular').checked == true){
+                    area = pi * ( tamanho ** 2 )
+                    
+                }
+
+                if (document.getElementById('idQuadrada').checked == true){
+                    area = tamanho * tamanho
+                    
+                }
+
+                if (document.getElementById('idRetangular').checked == true){
+                    area = tamanho * tamanho2
+                }
+
+                return area 
+
             }
 
 
